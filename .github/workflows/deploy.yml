@@ -21,7 +21,7 @@ jobs:
         run: npm install -g @marp-team/marp-cli
 
       - name: Build presentation
-        run: marp slide.md --html --output dist/index.html
+        run: marp slides.md --html --output dist/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
