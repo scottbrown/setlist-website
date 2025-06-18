@@ -1,14 +1,16 @@
-name: Build and Deploy GitHub Pages
+name: Build and Deploy Marp to GitHub Pages
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: write
+  pages: write           # ✅ allow deployment to Pages
+  id-token: write        # ✅ needed for authentication with Pages API
+  contents: read
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +28,19 @@ jobs:
       - name: Build presentation
         run: marp slides.md --html --output dist/index.html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
